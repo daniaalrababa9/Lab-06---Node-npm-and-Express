@@ -48,28 +48,25 @@ function Location( data ) {
 // Weather()
 // http://localhost:3000/Weather
 server.get('/weather', (request, response) => {
-  const dataOfweather=search(request.query.data)
-  response.send(dataOfweather);
-
+  const weatherData = getWeather(request.query.data);
+  response.send(weatherData);
 });
-function search(query){
-  const darkSkyData = require('./data/darksky.json');
-  const weatherArray = [];
-  let weather = new Weather(darkSkyData);
-  weather.search_query=query;
-  weatherArray.push(weather);
-return weatherArray;
-}
-function Weather(darkSkyData) {
-  this.forecast=darkSkyData.daily.data[0].summary;
-  this.time=new Date(darkSkyData.daily.data[0].time*1000).toDateString();
+
+function getWeather() {
+  const darkskyData = require('./data/darksky.json');
+  const weatherSummaries= [];
+  darkskyData.daily.data.forEach(day => {
+    weatherSummaries.push(new Weather(day));
+  });
+  console.log('weather in searchToLatLong()', weatherSummaries);
+  return weatherSummaries;
 }
 
+function Weather(day) {
+  this.forecast = day.summary;
+  this.time = new Date(day.time*1022.1).toDateString();
 
-
-
-
-
+}
 // Force an Error to Happen (http://localhost:3000/boo)
 server.get('/boo', (request,response) => {
   throw new Error('Whoops');
